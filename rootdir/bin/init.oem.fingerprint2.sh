@@ -18,9 +18,13 @@ persist_fps_id=/mnt/vendor/persist/fps/vendor_id
 persist_fps_id2=/mnt/vendor/persist/fps/last_vendor_id
 MAX_TIMES=100
 
-if [ ! -f $persist_fps_id ]; then
-    notice "warn: no associated persist file found"
-    return -1
+mkdir -p /mnt/vendor/persist/fps
+if [ ! -f $persist_fps_id ] || [ ! -s $persist_fps_id ] || [ "$(cat $persist_fps_id 2>/dev/null)" = "none" ]; then
+    notice "warn: invalid or missing persist fps file, auto-healing to egis"
+    echo "egis" > $persist_fps_id
+    echo "egis" > $persist_fps_id2
+    chmod 0660 $persist_fps_id $persist_fps_id2 2>/dev/null || true
+    chown system:system $persist_fps_id $persist_fps_id2 2>/dev/null || true
 fi
 FPS_VENDOR_NONE=none
 FPS_VENDOR_EGIS=egis
